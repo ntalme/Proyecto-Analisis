@@ -8,22 +8,191 @@ import re
 import random
 #LIBRERIA PARA COPIAR ARCHIVOS
 import shutil
+#LIBRERIA PARA CREAR PESTAÑAS INTERACTIVAS
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
 
-#Funcion para abrir el archivo
+# Función para abrir el archivo
 def abrir_archivo_ifc(ruta_archivo):
     try:
-        #Abrir archivo
+        # Abrir archivo
         archivo_ifc = ifcopenshell.open(ruta_archivo)
-
         print("Archivo IFC abierto correctamente.")
         return archivo_ifc
-    
-    #Si es que hay algun error
     except Exception as e:
         print("Error al abrir el archivo IFC:", e)
         return None
 
-#FUNCION PARA CAMBIAR EL VALOR DE LA TEMPERATURA
+# Función para obtener el rango de temperatura según la zona y la estación
+def obtener_rango_temperatura(zona, estacion):
+    #ZONA NORTE
+    if zona == "Zona Norte":
+        if estacion == "Invierno":
+            return (5, 25)
+        elif estacion == "Otoño":
+            return (10, 30)
+        elif estacion == "Primavera":
+            return (15, 30)
+        elif estacion == "Verano":
+            return (25, 35)
+    #ZONA CENTRAL
+    elif zona == "Zona Central":
+        if estacion == "Invierno":
+            return (0, 20)
+        elif estacion == "Otoño":
+            return (5, 25)
+        elif estacion == "Primavera":
+            return (10, 25)
+        elif estacion == "Verano":
+            return (20, 35)
+    #ZONA SUR
+    elif zona == "Zona Sur":
+        if estacion == "Invierno":
+            return (0, 15)
+        elif estacion == "Otoño":
+            return (5, 20)
+        elif estacion == "Primavera":
+            return (10, 20)
+        elif estacion == "Verano":
+            return (15, 25)
+    #ZONA AUSTRAL
+    elif zona == "Zona Austral":
+        if estacion == "Invierno":
+            return (-5, 10)
+        elif estacion == "Otoño":
+            return (0, 10)
+        elif estacion == "Primavera":
+            return (5, 15)
+        elif estacion == "Verano":
+            return (10, 20)
+    return None
+
+# Función para calcular la cantidad de luz solar
+def calcular_luz_solar(zona, estacion, hora):
+    luz_solar = 0
+    #ZONA NORTE
+    if zona == "Zona Norte":
+        #ESTACIONES
+        if estacion == "Invierno":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1200
+            elif hora == "Tarde":
+                luz_solar = 800
+
+        elif estacion == "Otoño":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1400
+            elif hora == "Tarde":
+                luz_solar = 1000   
+
+        elif estacion == "Primavera":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1600
+            elif hora == "Tarde":
+                luz_solar = 1200
+
+        elif estacion == "Verano":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1800
+            elif hora == "Tarde":
+                luz_solar = 1400
+
+    #ZONA CENTRAL
+    elif zona == "Zona Central":
+        #ESTACIONES
+        if estacion == "Invierno":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1100
+            elif hora == "Tarde":
+                luz_solar = 900
+
+        elif estacion == "Otoño":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1300
+            elif hora == "Tarde":
+                luz_solar = 1000
+
+        elif estacion == "Primavera":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1500
+            elif hora == "Tarde":
+                luz_solar = 1100
+
+        elif estacion == "Verano":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1700
+            elif hora == "Tarde":
+                luz_solar = 1300
+
+    #ZONA SUR
+    elif zona == "Zona Sur":
+        #ESTACIONES
+        if estacion == "Invierno":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1000
+            elif hora == "Tarde":
+                luz_solar = 800
+
+        elif estacion == "Otoño":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1200
+            elif hora == "Tarde":
+                luz_solar = 900
+
+        elif estacion == "Primavera":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1400
+            elif hora == "Tarde":
+                luz_solar = 1000
+        elif estacion == "Verano":
+            if hora == "Mañana":
+                luz_solar = 1600
+            elif hora == "Tarde":
+                luz_solar = 1200
+    #ZONA AUSTRAL
+    elif zona == "Zona Austral":
+        #ESTACIONES
+        if estacion == "Invierno":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 800
+            elif hora == "Tarde":
+                luz_solar = 600
+
+        elif estacion == "Otoño":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1000
+            elif hora == "Tarde":
+                luz_solar = 700
+
+        elif estacion == "Primavera":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1200
+            elif hora == "Tarde":
+                luz_solar = 900
+
+        elif estacion == "Verano":
+            #HORA DEL DIA
+            if hora == "Mañana":
+                luz_solar = 1400
+            elif hora == "Tarde":
+                luz_solar = 1000
+    return luz_solar
+
+# FUNCION PARA CAMBIAR EL VALOR DE LA TEMPERATURA
 def cambiar_valor_temperatura(ruta_archivo, nuevo_valor):
     try:
         # Leer el archivo
@@ -40,11 +209,21 @@ def cambiar_valor_temperatura(ruta_archivo, nuevo_valor):
                 file.write(archivo_modificado)
         else:
             print("El parámetro de temperatura no está presente en el archivo IFC. No se realizaron cambios.")
-
+    #ERROR
     except Exception as e:
         print("Error al cambiar el valor de temperatura:", e)
 
-#FUNCION PARA CAMBIAR EL VALOR DE LA HUMEDAD
+# Función para obtener el rango de humedad base
+def obtener_rango_humedad_base():
+    return (30, 70)  # Rango de humedad base entre 30% y 70%
+
+# Función para obtener la humedad relativa según la fórmula: HR = HR(base) + (Numero de personas x aporte de humedad(0,3g/h))
+# Esta fórmula nos dara una estimación de la humedad relativa interior de un edificio teniendo en cuenta el aporte de humedad de las personas que lo habitan.
+def calcular_humedad_relativa(humedad_base, numero_personas):
+    aporte_humedad = 0.3  # Aporte de humedad por persona en g/h
+    return humedad_base + (numero_personas * aporte_humedad)
+
+# FUNCION PARA CAMBIAR EL VALOR DE LA HUMEDAD
 def cambiar_valor_humedad(ruta_archivo, nuevo_valor):
     try:
         # Leer el archivo
@@ -54,18 +233,18 @@ def cambiar_valor_humedad(ruta_archivo, nuevo_valor):
         # Verificar si el sensor de humedad está presente en el archivo IFC
         if "IFCPOSITIVERATIOMEASURE" in archivo_texto:
             # Buscar y reemplazar el valor de humedad
-            archivo_modificado  = re.sub(r'IFCPOSITIVERATIOMEASURE\((\d+\.)\)', f'IFCPOSITIVERATIOMEASURE({nuevo_valor}.)', archivo_texto)
+            archivo_modificado = re.sub(r'IFCPOSITIVERATIOMEASURE\((\d+\.)\)', f'IFCPOSITIVERATIOMEASURE({nuevo_valor}.)', archivo_texto)
 
             # Escribir el archivo modificado
             with open(ruta_archivo, 'w') as file:
                 file.write(archivo_modificado)
         else:
             print("El sensor de humedad no está presente en el archivo IFC. No se realizaron cambios.")
-
+    #ERROR
     except Exception as e:
         print("Error al cambiar el valor de humedad:", e)
 
-#FUNCION PARA CAMBIAR EL VALOR DE LA LUZ
+# FUNCION PARA CAMBIAR EL VALOR DE LA LUZ
 def cambiar_valor_luz(ruta_archivo, nuevo_valor):
     try:
         # Leer el archivo
@@ -82,16 +261,13 @@ def cambiar_valor_luz(ruta_archivo, nuevo_valor):
                 file.write(archivo_modificado)
         else:
             print("El parámetro de luz no está presente en el archivo IFC. No se realizaron cambios.")
-
+    #ERROR
     except Exception as e:
         print("Error al cambiar el valor de luz:", e)
 
-#Funcion main
-if __name__ == "__main__":
-    
-    #Pedir al usuario la ruta
-    ruta_archivo_ifc = input("Por favor, ingresa la ruta del archivo IFC: ").strip('"')
-
+# Función para manejar la creación de archivos
+def crear_archivos():
+    ruta_archivo_ifc = entry_ruta.get()
     archivo_ifc = abrir_archivo_ifc(ruta_archivo_ifc)
 
     if archivo_ifc:
@@ -99,132 +275,340 @@ if __name__ == "__main__":
         with open(ruta_archivo_ifc, 'r') as file:
             archivo_texto = file.read()
 
-        #Preguntar la cantidad de documentos con valores de temperatura y humedad diferentes que se quieren crear
-        cantidad_documentos = int(input("Ingrese la cantidad de documentos con valores de sensores aleatorios: "))
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+         # Cerrar la ventana principal
+            root.withdraw()
+
+            #TEMPERATURA
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de temperatura")
+
+            label_zona = tk.Label(ventana_parametros, text="Zona:")
+            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona.set("Zona Norte")
+            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion.set("Invierno")
+            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            #HUMEDAD
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de humedad")
+
+            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            entry_personas = tk.Entry(ventana_parametros)
+            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            #LUZ
+            label_hora = tk.Label(ventana_hora, text="Hora:")
+            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
+            combo_hora.set("Mañana")
+            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
+            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            # Cerrar la ventana principal
+            root.withdraw()
+
+            #TEMPERATURA
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de temperatura")
+
+            label_zona = tk.Label(ventana_parametros, text="Zona:")
+            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona.set("Zona Norte")
+            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion.set("Invierno")
+            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            #HUMEDAD
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de humedad")
+
+            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            entry_personas = tk.Entry(ventana_parametros)
+            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get()))
+            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+            # Cerrar la ventana principal
+            root.withdraw()
+
+            #TEMPERATURA
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de temperatura")
+
+            label_zona = tk.Label(ventana_parametros, text="Zona:")
+            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona.set("Zona Norte")
+            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion.set("Invierno")
+            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            #LUZ
+            label_hora = tk.Label(ventana_hora, text="Hora:")
+            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
+            combo_hora.set("Mañana")
+            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), combo_hora.get()))
+            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        if "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+            # Cerrar la ventana principal
+            root.withdraw()
+            
+            #HUMEDAD
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de humedad")
+
+            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            entry_personas = tk.Entry(ventana_parametros)
+            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            #LUZ
+            label_hora = tk.Label(ventana_hora, text="Hora:")
+            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
+            combo_hora.set("Mañana")
+            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
+            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
+            # Cerrar la ventana principal
+            root.withdraw()
+
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de temperatura")
+
+            label_zona = tk.Label(ventana_parametros, text="Zona:")
+            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona.set("Zona Norte")
+            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion.set("Invierno")
+            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get()))
+            button_generar.grid(row=3, column=0, columnspan=2, pady=10)
+
+
+        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            # Cerrar la ventana principal
+            root.withdraw()
+
+            # Abrir una nueva ventana para seleccionar la zona y la estación
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para el sensor de humedad")
+
+            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            entry_personas = tk.Entry(ventana_parametros)
+            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get()))
+            button_generar.grid(row=3, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        elif "IFCILLUMINANCEMEASURE" in archivo_texto:  
+            # Abrir una nueva ventana para seleccionar la hora
+            ventana_hora = tk.Toplevel()
+            ventana_hora.title("Selección de hora")
+
+            label_zona = tk.Label(ventana_parametros, text="Zona:")
+            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona.set("Zona Norte")
+            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion.set("Invierno")
+            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            label_hora = tk.Label(ventana_hora, text="Hora:")
+            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
+            combo_hora.set("Mañana")
+            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+
+            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), combo_hora.get()))
+            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        else:
+            messagebox.showwarning("Advertencia", "El archivo IFC no contiene parámetros de temperatura.")
+
+
+# Función para generar archivos con valores de temperatura, humedad y luz diferentes
+def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
+    cantidad_documentos = int(entry_cantidad.get())
+    archivo_texto = ""
+
+    with open(ruta_archivo, 'r') as file:
+        archivo_texto = file.read()
+
+    # Directorio para guardar los documentos
+    carpeta_destino = os.path.join(os.path.expanduser("~"), "Desktop", "Simulaciones IFC")
+    if not os.path.exists(carpeta_destino):
+        os.makedirs(carpeta_destino)
+
+    documentos_creados = []
+
+    # Obtener rango de humedad base
+    rango_humedad_base = obtener_rango_humedad_base()
+    humedad_base = random.randint(rango_humedad_base[0], rango_humedad_base[1])
+
+    # Inicializar nuevo_valor_luz como None
+    nuevo_valor_luz = None
+
+    # Generar los documentos con valores de temperatura, humedad y luz diferentes
+    for i in range(1, cantidad_documentos + 1):
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
+            # Generar valores aleatorios entre los rangos de temperatura según la zona y la estación
+            rango_temperatura = obtener_rango_temperatura(zona, estacion)
+            nuevo_valor_temperatura = random.randint(rango_temperatura[0], rango_temperatura[1])
+
+        if "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            # Calcular la humedad relativa
+            humedad_relativa = calcular_humedad_relativa(humedad_base, int(personas))
+        else:
+            humedad_relativa = humedad_base
+
+        nuevo_valor_humedad = humedad_relativa
+
+        if "IFCILLUMINANCEMEASURE" in archivo_texto:
+            # Calcular la cantidad de luz solar
+            nuevo_valor_luz = calcular_luz_solar(zona, estacion, hora)
+
+        # Crear una copia del archivo IFC
+        nombre_archivo_original = os.path.basename(ruta_archivo)
+
+        # Nombres del archivo
+        #TEMPERATURA, HUMEDAD Y LUZ
+        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{personas}_H{nuevo_valor_humedad:.2f}_{hora}L{nuevo_valor_luz}.ifc"
+
+        #TEMPERATURA Y HUMEDAD
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{personas}_H{nuevo_valor_humedad:.2f}.ifc"
+
+        #TEMPERATURA Y LUZ
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{hora}_L{nuevo_valor_luz}.ifc"
+
+        #HUMEDAD Y LUZ
+        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_{personas}__H{nuevo_valor_humedad:.2f}__{hora}L{nuevo_valor_luz}.ifc"
         
-        #Directorio para guardar los documentos
-        carpeta_destino = os.path.join(os.path.expanduser("~"), "Desktop", "Simulaciones IFC")
-        if not os.path.exists(carpeta_destino):
-            os.makedirs(carpeta_destino)
-
-        #Generar los documentos con valores de temperatura, humedad y luz diferentes
-        for i in range(1, cantidad_documentos + 1):
-            # Generar valores aleatorios entre 0 y 100 para la temperatura, humedad y luz
-            nuevo_valor_temperatura = random.randint(0, 100)
-            nuevo_valor_humedad = random.randint(0, 100) 
-            nuevo_valor_luz = random.randint(0, 100) 
-            
-            # Crear una copia del archivo IFC
-            nombre_archivo_original = os.path.basename(ruta_archivo_ifc)
-            
-            #NOMBRES DEL ARCHIVO
-            #Estan los sensores de temperatura, humedad y luz
-            if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_T{nuevo_valor_temperatura}_H{nuevo_valor_humedad}_L{nuevo_valor_luz}.ifc"
-
-            #Estan solo los sensores de temperatura y humedad 
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_T{nuevo_valor_temperatura}_H{nuevo_valor_humedad}.ifc"
-
-            #Estan solo los sensores de temperatura y luz
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_T{nuevo_valor_temperatura}_L{nuevo_valor_luz}.ifc"
-
-            #Estan solo los sensores humedad y luz
-            elif "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_H{nuevo_valor_humedad}_L{nuevo_valor_luz}.ifc"
-
-            #Esta solo el sensor de temperatura
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_T{nuevo_valor_temperatura}.ifc"
-
-            #Esta solo el sensor de humedad 
-            elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_H{nuevo_valor_humedad}.ifc"
-
-            #Esta solo el sensor de luz
-            elif "IFCILLUMINANCEMEASURE" in archivo_texto:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_L{nuevo_valor_luz}.ifc"
-
-            #No hay nada   
-            else:
-                nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{i}.ifc"
-                
-            ruta_archivo_copia = os.path.join(carpeta_destino, nombre_archivo_copia)
-            shutil.copyfile(ruta_archivo_ifc, ruta_archivo_copia)
+        #TEMPERATURA
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}.ifc"
         
-            #VERIFICAR LOS PARAMETROS 
-            #Estan los sensores de temperatura, humedad y luz
-            if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+        #HUMEDAD
+        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{personas}_H{nuevo_valor_humedad:.2f}.ifc"
 
-                # Cambiar el valor de temperatura en el nuevo archivo IFC
-                cambiar_valor_temperatura(ruta_archivo_copia, nuevo_valor_temperatura)
-            
-                # Cambiar el valor de humedad en el nuevo archivo IFC
-                cambiar_valor_humedad(ruta_archivo_copia, nuevo_valor_humedad)
-                
-                # Cambiar el valor de luz en el nuevo archivo IFC
-                cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
-                
-                print(f"Documento {i} creado correctamente con un valor de temperatura de {nuevo_valor_temperatura} grados Celsius, un valor de humedad de {nuevo_valor_humedad}% y un valor de luz de {nuevo_valor_luz}:", ruta_archivo_copia)
-            
-            #Estan solo los sensores de temperatura y humedad 
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+        #LUZ
+        elif "IFCILLUMINANCEMEASURE" in archivo_texto:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_{hora}_L{nuevo_valor_luz}.ifc"
 
-                # Cambiar el valor de temperatura en el nuevo archivo IFC
-                cambiar_valor_temperatura(ruta_archivo_copia, nuevo_valor_temperatura)
-    
-                # Cambiar el valor de humedad en el nuevo archivo IFC
-                cambiar_valor_humedad(ruta_archivo_copia, nuevo_valor_humedad)
-                
-                print(f"Documento {i} creado correctamente con un valor de temperatura de {nuevo_valor_temperatura} grados Celsius, un valor de humedad de {nuevo_valor_humedad}%. El parámetro de luz no está presente en el archivo IFC:", ruta_archivo_copia)
+        #NINGUNO
+        else:
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{i}.ifc"
 
-            #Estan solo los sensores de temperatura y luz
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+        # Crear una copia del archivo IFC
+        ruta_archivo_copia = os.path.join(carpeta_destino, nombre_archivo_copia)
+        shutil.copyfile(ruta_archivo, ruta_archivo_copia)
 
-                # Cambiar el valor de temperatura en el nuevo archivo IFC
-                cambiar_valor_temperatura(ruta_archivo_copia, nuevo_valor_temperatura)
-    
-                # Cambiar el valor de luz en el nuevo archivo IFC
-                cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
-                
-                print(f"Documento {i} creado correctamente con un valor de temperatura de {nuevo_valor_temperatura} grados Celsius y un valor de luz de {nuevo_valor_luz}. El parámetro de humedad no está presente en el archivo IFC:", ruta_archivo_copia)
-            
-             #Estan solo los sensores de humedad y luz
-            elif "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+        # Cambiar los valores en el nuevo archivo IFC
+        cambiar_valor_temperatura(ruta_archivo_copia, nuevo_valor_temperatura)
+        cambiar_valor_humedad(ruta_archivo_copia, nuevo_valor_humedad)
+        if nuevo_valor_luz is not None:  # Asegurar que nuevo_valor_luz tenga un valor antes de intentar usarlo
+            cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
 
-                # Cambiar el valor de humedad en el nuevo archivo IFC
-                cambiar_valor_humedad(ruta_archivo_copia, nuevo_valor_humedad)
-    
-                # Cambiar el valor de luz en el nuevo archivo IFC
-                cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
-                
-                print(f"Documento {i} creado correctamente con un valor de humedad de {nuevo_valor_humedad}% y un valor de luz de {nuevo_valor_luz}. El parámetro de temperatura no está presente en el archivo IFC:", ruta_archivo_copia)
-            
-            #Esta solo el sensor de temperatura
-            elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
+        documentos_creados.append(nombre_archivo_copia)
 
-                # Cambiar el valor de temperatura en el nuevo archivo IFC
-                cambiar_valor_temperatura(ruta_archivo_copia, nuevo_valor_temperatura)
-    
-                print(f"Documento {i} creado correctamente con un valor de temperatura de {nuevo_valor_temperatura} grados Celsius. Los parámetros de humedad y luz no están presentes en el archivo IFC:", ruta_archivo_copia)
+    # Mensaje de confirmación
+    mensaje_confirmacion = f"Se crearon {cantidad_documentos} documentos con los siguientes nombres:\n\n"
+    for documento in documentos_creados:
+        mensaje_confirmacion += f"{documento}\n"
+    mensaje_confirmacion += f"\nLos documentos se guardaron en: {carpeta_destino}"
+    messagebox.showinfo("Documentos creados", mensaje_confirmacion)
 
-            #Esta solo el sensor de humedad
-            elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+# Crear la ventana principal
+root = tk.Tk()
+root.title("Generador de archivos IFC")
 
-                # Cambiar el valor de humedad en el nuevo archivo IFC
-                cambiar_valor_humedad(ruta_archivo_copia, nuevo_valor_humedad)
-    
-                print(f"Documento {i} creado correctamente con un valor de humedad de {nuevo_valor_humedad}%. Los parámetros de temperatura y luz no están presentes en el archivo IFC:", ruta_archivo_copia)
+# Etiqueta y entrada para la ruta del archivo IFC
+label_ruta = tk.Label(root, text="Ruta del archivo IFC:")
+label_ruta.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+entry_ruta = tk.Entry(root, width=50)
+entry_ruta.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+button_examinar = tk.Button(root, text="Examinar", command=lambda: entry_ruta.insert(tk.END, filedialog.askopenfilename(filetypes=[("Archivos IFC", "*.ifc")])))
+button_examinar.grid(row=0, column=2, padx=5, pady=5)
 
-            #Esta solo el sensor de luz   
-            elif "IFCILLUMINANCEMEASURE" in archivo_texto:
+# Etiqueta y entrada para la cantidad de archivos a generar
+label_cantidad = tk.Label(root, text="Cantidad de archivos a generar:")
+label_cantidad.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+entry_cantidad = tk.Entry(root)
+entry_cantidad.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
-                # Cambiar el valor de luz en el nuevo archivo IFC
-                cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
-    
-                print(f"Documento {i} creado correctamente con un valor de luz de {nuevo_valor_luz}. Los parámetros de temperatura y humedad no están presentes en el archivo IFC:", ruta_archivo_copia)
+# Botón para generar los archivos
+button_generar = tk.Button(root, text="Generar archivos", command=crear_archivos)
+button_generar.grid(row=2, column=0, columnspan=2, pady=10)
 
-            #No hay sensores
-            else:
-                print(f"Documento {i} creado correctamente como no se encontro ningun sensor el documento queda sin ningun cambio:", ruta_archivo_copia)
+root.mainloop()
