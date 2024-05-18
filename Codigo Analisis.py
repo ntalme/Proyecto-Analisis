@@ -275,223 +275,239 @@ def crear_archivos():
         with open(ruta_archivo_ifc, 'r') as file:
             archivo_texto = file.read()
 
+        #TEMPERATURA, HUMEDAD Y LUZ
         if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-         # Cerrar la ventana principal
-            root.withdraw()
-
-            #TEMPERATURA
-            # Abrir una nueva ventana para seleccionar la zona y la estación
+            # Crear una nueva ventana para solicitar todos los parámetros
             ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de temperatura")
+            ventana_parametros.title("Condiciones para los sensores")
+
+            # Parámetros de TEMPERATURA
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            label_condiciones_temperatura.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="w")
 
             label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            label_zona.grid(row=1, column=0, padx=5, pady=5, sticky="w")
             combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
             combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+            combo_zona.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
             label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            label_estacion.grid(row=2, column=0, padx=5, pady=5, sticky="w")
             combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
             combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+            combo_estacion.grid(row=2, column=1, padx=5, pady=5, sticky="we")
 
-            #HUMEDAD
-            # Abrir una nueva ventana para seleccionar la zona y la estación
-            ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de humedad")
+            # Parámetros de HUMEDAD
+            label_condiciones_humedad = tk.Label(ventana_parametros, text="Condiciones para la Humedad:")
+            label_condiciones_humedad.grid(row=3, column=0, columnspan=2, padx=5, pady=5, sticky="w")
 
             label_personas = tk.Label(ventana_parametros, text="Número de personas:")
-            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            label_personas.grid(row=4, column=0, padx=5, pady=5, sticky="w")
             entry_personas = tk.Entry(ventana_parametros)
-            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+            entry_personas.grid(row=4, column=1, padx=5, pady=5, sticky="we")
 
-            #LUZ
-            label_hora = tk.Label(ventana_hora, text="Hora:")
-            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
+            # Parámetros de LUZ
+            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_luz.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky="w")
+
+            label_hora = tk.Label(ventana_parametros, text="Hora:")
+            label_hora.grid(row=6, column=0, padx=5, pady=5, sticky="w")
+            combo_hora = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
             combo_hora.set("Mañana")
-            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+            combo_hora.grid(row=6, column=1, padx=5, pady=5, sticky="we")
 
-            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
-            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+            # Botón para generar archivos
+            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
+            button_generar.grid(row=7, column=0, columnspan=2, pady=10)
+            
+        #TEMPERATURA Y HUMEDAD
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
 
-            # Cerrar la ventana principal
-            root.withdraw()
-
-        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-            # Cerrar la ventana principal
-            root.withdraw()
-
-            #TEMPERATURA
-            # Abrir una nueva ventana para seleccionar la zona y la estación
+            # Crear una nueva ventana para solicitar todos los parámetros
             ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de temperatura")
+            ventana_parametros.title("Condiciones para los sensores")
 
-            label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
-            combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+            # Parámetros de TEMPERATURA
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
-            combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+            label_zona_temp = tk.Label(ventana_parametros, text="Zona:")
+            label_zona_temp.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_zona_temp = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona_temp.set("Zona Norte")
+            combo_zona_temp.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
-            #HUMEDAD
-            # Abrir una nueva ventana para seleccionar la zona y la estación
+            label_estacion_temp = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion_temp.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion_temp = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion_temp.set("Invierno")
+            combo_estacion_temp.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            # Parámetros de HUMEDAD
+            label_condiciones_humedad = tk.Label(ventana_parametros, text="Condiciones para la Humedad:")
+            label_condiciones_humedad.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+
+            label_personas_humedad = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas_humedad.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+            entry_personas_humedad = tk.Entry(ventana_parametros)
+            entry_personas_humedad.grid(row=4, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_temp_hum = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp.get(), combo_estacion_temp.get(), entry_personas_humedad.get()))
+            button_generar_temp_hum.grid(row=5, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        #TEMPERATURA Y LUZ
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+
+            # Crear una nueva ventana para solicitar todos los parámetros
             ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de humedad")
+            ventana_parametros.title("Condiciones para los sensores")
 
-            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
-            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-            entry_personas = tk.Entry(ventana_parametros)
-            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+            # Parámetros de TEMPERATURA
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get()))
-            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+            label_zona_temp_luz = tk.Label(ventana_parametros, text="Zona:")
+            label_zona_temp_luz.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_zona_temp_luz = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona_temp_luz.set("Zona Norte")
+            combo_zona_temp_luz.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion_temp_luz = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion_temp_luz.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion_temp_luz = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion_temp_luz.set("Invierno")
+            combo_estacion_temp_luz.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            # Parámetros de LUZ
+            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_luz.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+
+            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
+            label_hora_luz.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
+            combo_hora_luz.set("Mañana")
+            combo_hora_luz.grid(row=4, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_temp_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp_luz.get(), combo_estacion_temp_luz.get(), combo_hora_luz.get()))
+            button_generar_temp_luz.grid(row=5, column=0, columnspan=2, pady=10)
 
             # Cerrar la ventana principal
             root.withdraw()
 
-        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-            # Cerrar la ventana principal
-            root.withdraw()
+        #HUMEDAD Y LUZ
+        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
 
-            #TEMPERATURA
-            # Abrir una nueva ventana para seleccionar la zona y la estación
+            # Crear una nueva ventana para solicitar todos los parámetros
             ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de temperatura")
+            ventana_parametros.title("Condiciones para los sensores")
 
-            label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
-            combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+            # Parámetros de HUMEDAD
+            label_condiciones_humedad = tk.Label(ventana_parametros, text="Condiciones para la Humedad:")
+            label_condiciones_humedad.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
-            combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+            label_personas_humedad_luz = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas_humedad_luz.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            entry_personas_humedad_luz = tk.Entry(ventana_parametros)
+            entry_personas_humedad_luz.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
-            #LUZ
-            label_hora = tk.Label(ventana_hora, text="Hora:")
-            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
-            combo_hora.set("Mañana")
-            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+            # Parámetros de LUZ
+            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_luz.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
-            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), combo_hora.get()))
-            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
+            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
+            label_hora_luz.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
+            combo_hora_luz.set("Mañana")
+            combo_hora_luz.grid(row=3, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_humedad_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, entry_personas_humedad_luz.get(), combo_hora_luz.get()))
+            button_generar_humedad_luz.grid(row=4, column=0, columnspan=2, pady=10)
 
             # Cerrar la ventana principal
             root.withdraw()
 
-        if "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
+        #TEMPERATURA
+        elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
+            # Crear una nueva ventana para solicitar todos los parámetros
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para los sensores")
+
+            # Parámetros de TEMPERATURA
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+            label_zona_temp = tk.Label(ventana_parametros, text="Zona:")
+            label_zona_temp.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_zona_temp = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona_temp.set("Zona Norte")
+            combo_zona_temp.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion_temp = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion_temp.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion_temp = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion_temp.set("Invierno")
+            combo_estacion_temp.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_temp = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp.get(), combo_estacion_temp.get()))
+            button_generar_temp.grid(row=4, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        #HUMEDAD
+        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
+            # Crear una nueva ventana para solicitar todos los parámetros
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para los sensores")
+
+            # Parámetros de HUMEDAD
+            label_condiciones_humedad = tk.Label(ventana_parametros, text="Condiciones para la Humedad:")
+            label_condiciones_humedad.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+            label_personas_humedad = tk.Label(ventana_parametros, text="Número de personas:")
+            label_personas_humedad.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            entry_personas_humedad = tk.Entry(ventana_parametros)
+            entry_personas_humedad.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_humedad = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, entry_personas_humedad.get()))
+            button_generar_humedad.grid(row=4, column=0, columnspan=2, pady=10)
+
+            # Cerrar la ventana principal
+            root.withdraw()
+
+        #LUZ
+        elif "IFCILLUMINANCEMEASURE" in archivo_texto:  
+            # Crear una nueva ventana para solicitar todos los parámetros
+            ventana_parametros = tk.Toplevel()
+            ventana_parametros.title("Condiciones para los sensores")
+
+            # Parámetros de LUZ
+            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_luz.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
+            label_hora_luz.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
+            combo_hora_luz.set("Mañana")
+            combo_hora_luz.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            # Botón para generar archivos
+            button_generar_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_hora_luz.get()))
+            button_generar_luz.grid(row=4, column=0, columnspan=2, pady=10)
+
             # Cerrar la ventana principal
             root.withdraw()
             
-            #HUMEDAD
-            # Abrir una nueva ventana para seleccionar la zona y la estación
-            ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de humedad")
-
-            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
-            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-            entry_personas = tk.Entry(ventana_parametros)
-            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
-
-            #LUZ
-            label_hora = tk.Label(ventana_hora, text="Hora:")
-            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
-            combo_hora.set("Mañana")
-            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
-
-            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
-            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
-
-            # Cerrar la ventana principal
-            root.withdraw()
-
-        if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
-            # Cerrar la ventana principal
-            root.withdraw()
-
-            # Abrir una nueva ventana para seleccionar la zona y la estación
-            ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de temperatura")
-
-            label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
-            combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
-
-            label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
-            combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
-
-            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get()))
-            button_generar.grid(row=3, column=0, columnspan=2, pady=10)
-
-
-        elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-            # Cerrar la ventana principal
-            root.withdraw()
-
-            # Abrir una nueva ventana para seleccionar la zona y la estación
-            ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para el sensor de humedad")
-
-            label_personas = tk.Label(ventana_parametros, text="Número de personas:")
-            label_personas.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-            entry_personas = tk.Entry(ventana_parametros)
-            entry_personas.grid(row=2, column=1, padx=5, pady=5, sticky="we")
-
-            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get()))
-            button_generar.grid(row=3, column=0, columnspan=2, pady=10)
-
-            # Cerrar la ventana principal
-            root.withdraw()
-
-        elif "IFCILLUMINANCEMEASURE" in archivo_texto:  
-            # Abrir una nueva ventana para seleccionar la hora
-            ventana_hora = tk.Toplevel()
-            ventana_hora.title("Selección de hora")
-
-            label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
-            combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
-
-            label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
-            combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
-
-            label_hora = tk.Label(ventana_hora, text="Hora:")
-            label_hora.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_hora = ttk.Combobox(ventana_hora, values=["Mañana", "Tarde"])
-            combo_hora.set("Mañana")
-            combo_hora.grid(row=0, column=1, padx=5, pady=5, sticky="we")
-
-            button_generar = tk.Button(ventana_hora, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), combo_hora.get()))
-            button_generar.grid(row=1, column=0, columnspan=2, pady=10)
-
-            # Cerrar la ventana principal
-            root.withdraw()
-
         else:
             messagebox.showwarning("Advertencia", "El archivo IFC no contiene parámetros de temperatura.")
-
 
 # Función para generar archivos con valores de temperatura, humedad y luz diferentes
 def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
@@ -515,12 +531,12 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
     # Inicializar nuevo_valor_luz como None
     nuevo_valor_luz = None
 
-    # Generar los documentos con valores de temperatura, humedad y luz diferentes
+   # Generar los documentos con valores de temperatura, humedad y luz diferentes
     for i in range(1, cantidad_documentos + 1):
         if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
             # Generar valores aleatorios entre los rangos de temperatura según la zona y la estación
             rango_temperatura = obtener_rango_temperatura(zona, estacion)
-            nuevo_valor_temperatura = random.randint(rango_temperatura[0], rango_temperatura[1])
+            nuevo_valor_temperatura = round(random.uniform(rango_temperatura[0], rango_temperatura[1]))
 
         if "IFCPOSITIVERATIOMEASURE" in archivo_texto:
             # Calcular la humedad relativa
@@ -528,11 +544,11 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
         else:
             humedad_relativa = humedad_base
 
-        nuevo_valor_humedad = humedad_relativa
+        nuevo_valor_humedad = round(humedad_relativa)
 
         if "IFCILLUMINANCEMEASURE" in archivo_texto:
             # Calcular la cantidad de luz solar
-            nuevo_valor_luz = calcular_luz_solar(zona, estacion, hora)
+            nuevo_valor_luz = round(calcular_luz_solar(zona, estacion, hora))
 
         # Crear una copia del archivo IFC
         nombre_archivo_original = os.path.basename(ruta_archivo)
@@ -540,19 +556,19 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
         # Nombres del archivo
         #TEMPERATURA, HUMEDAD Y LUZ
         if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{personas}_H{nuevo_valor_humedad:.2f}_{hora}L{nuevo_valor_luz}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_H{nuevo_valor_humedad}_L{nuevo_valor_luz}.ifc"
 
         #TEMPERATURA Y HUMEDAD
         elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{personas}_H{nuevo_valor_humedad:.2f}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_H{nuevo_valor_humedad}.ifc"
 
         #TEMPERATURA Y LUZ
         elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_{hora}_L{nuevo_valor_luz}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_T{nuevo_valor_temperatura}_L{nuevo_valor_luz}.ifc"
 
         #HUMEDAD Y LUZ
         elif "IFCPOSITIVERATIOMEASURE" in archivo_texto and "IFCILLUMINANCEMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_{personas}__H{nuevo_valor_humedad:.2f}__{hora}L{nuevo_valor_luz}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_H{nuevo_valor_humedad}_L{nuevo_valor_luz}.ifc"
         
         #TEMPERATURA
         elif "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
@@ -560,11 +576,11 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
         
         #HUMEDAD
         elif "IFCPOSITIVERATIOMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{personas}_H{nuevo_valor_humedad:.2f}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_H{nuevo_valor_humedad}.ifc"
 
         #LUZ
         elif "IFCILLUMINANCEMEASURE" in archivo_texto:
-            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_{hora}_L{nuevo_valor_luz}.ifc"
+            nombre_archivo_copia = f"{os.path.splitext(nombre_archivo_original)[0]}_{zona}_{estacion}_L{nuevo_valor_luz}.ifc"
 
         #NINGUNO
         else:
@@ -608,7 +624,7 @@ entry_cantidad = tk.Entry(root)
 entry_cantidad.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
 # Botón para generar los archivos
-button_generar = tk.Button(root, text="Generar archivos", command=crear_archivos)
+button_generar = tk.Button(root, text="Elegir Parametros", command=crear_archivos)
 button_generar.grid(row=2, column=0, columnspan=2, pady=10)
 
 root.mainloop()
