@@ -24,173 +24,131 @@ def abrir_archivo_ifc(ruta_archivo):
         return None
 
 # Función para obtener el rango de temperatura según la zona y la estación
+# Datos sacado de weatherspark.com
 def obtener_rango_temperatura(zona, estacion):
     #ZONA NORTE
+    #TOMANDO LOS DATOS EN CALAMA
     if zona == "Zona Norte":
         if estacion == "Invierno":
-            return (5, 25)
+            return (2, 22)
         elif estacion == "Otoño":
-            return (10, 30)
+            return (3, 24)
         elif estacion == "Primavera":
-            return (15, 30)
+            return (4, 24)
         elif estacion == "Verano":
-            return (25, 35)
+            return (7, 24)
     #ZONA CENTRAL
+    #TOMANDO LOS DATOS EN SANTIAGO
     elif zona == "Zona Central":
         if estacion == "Invierno":
-            return (0, 20)
+            return (3, 18)
         elif estacion == "Otoño":
-            return (5, 25)
+            return (5, 27)
         elif estacion == "Primavera":
-            return (10, 25)
+            return (5, 28)
         elif estacion == "Verano":
-            return (20, 35)
+            return (12, 31)
     #ZONA SUR
+    #TOMANDO LOS DATOS DE CONCEPCION
     elif zona == "Zona Sur":
         if estacion == "Invierno":
-            return (0, 15)
+            return (6, 14)
         elif estacion == "Otoño":
-            return (5, 20)
+            return (7, 22)
         elif estacion == "Primavera":
-            return (10, 20)
+            return (6, 20)
         elif estacion == "Verano":
-            return (15, 25)
+            return (11, 23)
     #ZONA AUSTRAL
     elif zona == "Zona Austral":
         if estacion == "Invierno":
-            return (-5, 10)
+            return (3, 11)
         elif estacion == "Otoño":
-            return (0, 10)
+            return (3, 18)
         elif estacion == "Primavera":
-            return (5, 15)
+            return (4, 16)
         elif estacion == "Verano":
-            return (10, 20)
+            return (10, 18)
     return None
 
 # Función para calcular la cantidad de luz solar
-def calcular_luz_solar(zona, estacion, hora):
+# Datos sacado de Revista Stratus
+def calcular_luz_solar(zona, estacion):
     luz_solar = 0
     #ZONA NORTE
     if zona == "Zona Norte":
         #ESTACIONES
         if estacion == "Invierno":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1200
-            elif hora == "Tarde":
-                luz_solar = 800
+                luz_solar = (4500, 6500) 
 
         elif estacion == "Otoño":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1400
-            elif hora == "Tarde":
-                luz_solar = 1000   
+                luz_solar = (4500, 6500) 
 
         elif estacion == "Primavera":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1600
-            elif hora == "Tarde":
-                luz_solar = 1200
+                luz_solar = (5500, 7000)
 
         elif estacion == "Verano":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1800
-            elif hora == "Tarde":
-                luz_solar = 1400
+                luz_solar = (5500, 6500)
 
     #ZONA CENTRAL
     elif zona == "Zona Central":
         #ESTACIONES
         if estacion == "Invierno":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1100
-            elif hora == "Tarde":
-                luz_solar = 900
+                luz_solar = (2000, 4000) 
 
         elif estacion == "Otoño":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1300
-            elif hora == "Tarde":
-                luz_solar = 1000
+                luz_solar = (2000, 5500) 
 
         elif estacion == "Primavera":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1500
-            elif hora == "Tarde":
-                luz_solar = 1100
+                luz_solar = (4000, 7000)
 
         elif estacion == "Verano":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1700
-            elif hora == "Tarde":
-                luz_solar = 1300
+                luz_solar = (5500, 7000)
 
     #ZONA SUR
     elif zona == "Zona Sur":
         #ESTACIONES
         if estacion == "Invierno":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1000
-            elif hora == "Tarde":
-                luz_solar = 800
-
+                luz_solar = (3000, 4000) 
+               
         elif estacion == "Otoño":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1200
-            elif hora == "Tarde":
-                luz_solar = 900
+                luz_solar = (3000, 5000) 
 
         elif estacion == "Primavera":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1400
-            elif hora == "Tarde":
-                luz_solar = 1000
+                luz_solar = (4000, 6500)
+
         elif estacion == "Verano":
-            if hora == "Mañana":
-                luz_solar = 1600
-            elif hora == "Tarde":
-                luz_solar = 1200
+                luz_solar = (5000, 6500)
+
     #ZONA AUSTRAL
     elif zona == "Zona Austral":
         #ESTACIONES
         if estacion == "Invierno":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 800
-            elif hora == "Tarde":
-                luz_solar = 600
+                luz_solar = (1000, 2500) 
 
         elif estacion == "Otoño":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1000
-            elif hora == "Tarde":
-                luz_solar = 700
+                luz_solar = (1000, 2000) 
 
         elif estacion == "Primavera":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1200
-            elif hora == "Tarde":
-                luz_solar = 900
+                luz_solar = (2500,3500)
 
         elif estacion == "Verano":
-            #HORA DEL DIA
-            if hora == "Mañana":
-                luz_solar = 1400
-            elif hora == "Tarde":
-                luz_solar = 1000
+                luz_solar = (2000, 3500)
     return luz_solar
+
+# Función para obtener el rango de humedad base
+# Formula sacada de National Weather Service
+def calcular_presion_vapor_saturado(temperatura):
+    return 6.11 * 10**(7.5 * temperatura / (237.3 + temperatura))
+
+def calcular_humedad_relativa(temperatura, temperatura_rocio, numero_personas):
+    es = calcular_presion_vapor_saturado(temperatura)
+    e = calcular_presion_vapor_saturado(temperatura_rocio)
+    
+    # Ajustar la humedad absoluta (presión de vapor real) por la cantidad de personas
+    e += 0.3 * numero_personas
+    
+    return (e / es) * 100
 
 # FUNCION PARA CAMBIAR EL VALOR DE LA TEMPERATURA
 def cambiar_valor_temperatura(ruta_archivo, nuevo_valor):
@@ -212,16 +170,6 @@ def cambiar_valor_temperatura(ruta_archivo, nuevo_valor):
     #ERROR
     except Exception as e:
         print("Error al cambiar el valor de temperatura:", e)
-
-# Función para obtener el rango de humedad base
-def obtener_rango_humedad_base():
-    return (30, 70)  # Rango de humedad base entre 30% y 70%
-
-# Función para obtener la humedad relativa según la fórmula: HR = HR(base) + (Numero de personas x aporte de humedad(0,3g/h))
-# Esta fórmula nos dara una estimación de la humedad relativa interior de un edificio teniendo en cuenta el aporte de humedad de las personas que lo habitan.
-def calcular_humedad_relativa(humedad_base, numero_personas):
-    aporte_humedad = 0.3  # Aporte de humedad por persona en g/h
-    return humedad_base + (numero_personas * aporte_humedad)
 
 # FUNCION PARA CAMBIAR EL VALOR DE LA HUMEDAD
 def cambiar_valor_humedad(ruta_archivo, nuevo_valor):
@@ -281,8 +229,8 @@ def crear_archivos():
             ventana_parametros = tk.Toplevel()
             ventana_parametros.title("Condiciones para los sensores")
 
-            # Parámetros de TEMPERATURA
-            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            # Parámetros de TEMPERATURA y LUZ
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura y la Luz:")
             label_condiciones_temperatura.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky="w")
 
             label_zona = tk.Label(ventana_parametros, text="Zona:")
@@ -306,18 +254,8 @@ def crear_archivos():
             entry_personas = tk.Entry(ventana_parametros)
             entry_personas.grid(row=4, column=1, padx=5, pady=5, sticky="we")
 
-            # Parámetros de LUZ
-            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
-            label_condiciones_luz.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky="w")
-
-            label_hora = tk.Label(ventana_parametros, text="Hora:")
-            label_hora.grid(row=6, column=0, padx=5, pady=5, sticky="w")
-            combo_hora = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
-            combo_hora.set("Mañana")
-            combo_hora.grid(row=6, column=1, padx=5, pady=5, sticky="we")
-
             # Botón para generar archivos
-            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get(), combo_hora.get()))
+            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), entry_personas.get()))
             button_generar.grid(row=7, column=0, columnspan=2, pady=10)
             
         #TEMPERATURA Y HUMEDAD
@@ -366,8 +304,8 @@ def crear_archivos():
             ventana_parametros = tk.Toplevel()
             ventana_parametros.title("Condiciones para los sensores")
 
-            # Parámetros de TEMPERATURA
-            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura:")
+            # Parámetros de TEMPERATURA y LUZ
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Temperatura y la Luz:")
             label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
             label_zona_temp_luz = tk.Label(ventana_parametros, text="Zona:")
@@ -382,18 +320,8 @@ def crear_archivos():
             combo_estacion_temp_luz.set("Invierno")
             combo_estacion_temp_luz.grid(row=2, column=1, padx=5, pady=5, sticky="we")
 
-            # Parámetros de LUZ
-            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
-            label_condiciones_luz.grid(row=3, column=0, padx=5, pady=5, sticky="w")
-
-            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
-            label_hora_luz.grid(row=4, column=0, padx=5, pady=5, sticky="w")
-            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
-            combo_hora_luz.set("Mañana")
-            combo_hora_luz.grid(row=4, column=1, padx=5, pady=5, sticky="we")
-
             # Botón para generar archivos
-            button_generar_temp_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp_luz.get(), combo_estacion_temp_luz.get(), combo_hora_luz.get()))
+            button_generar_temp_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp_luz.get(), combo_estacion_temp_luz.get()))
             button_generar_temp_luz.grid(row=5, column=0, columnspan=2, pady=10)
 
             # Cerrar la ventana principal
@@ -406,6 +334,22 @@ def crear_archivos():
             ventana_parametros = tk.Toplevel()
             ventana_parametros.title("Condiciones para los sensores")
 
+            # Parámetros de  Luz
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+            label_zona_temp = tk.Label(ventana_parametros, text="Zona:")
+            label_zona_temp.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_zona_temp = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona_temp.set("Zona Norte")
+            combo_zona_temp.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion_temp = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion_temp.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion_temp = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion_temp.set("Invierno")
+            combo_estacion_temp.grid(row=2, column=1, padx=5, pady=5, sticky="we")
+
             # Parámetros de HUMEDAD
             label_condiciones_humedad = tk.Label(ventana_parametros, text="Condiciones para la Humedad:")
             label_condiciones_humedad.grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -415,18 +359,9 @@ def crear_archivos():
             entry_personas_humedad_luz = tk.Entry(ventana_parametros)
             entry_personas_humedad_luz.grid(row=1, column=1, padx=5, pady=5, sticky="we")
 
-            # Parámetros de LUZ
-            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
-            label_condiciones_luz.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-
-            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
-            label_hora_luz.grid(row=3, column=0, padx=5, pady=5, sticky="w")
-            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
-            combo_hora_luz.set("Mañana")
-            combo_hora_luz.grid(row=3, column=1, padx=5, pady=5, sticky="we")
 
             # Botón para generar archivos
-            button_generar_humedad_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, entry_personas_humedad_luz.get(), combo_hora_luz.get()))
+            button_generar_humedad_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, entry_personas_humedad_luz.get(), combo_zona_temp_luz.get(), combo_estacion_temp_luz.get()))
             button_generar_humedad_luz.grid(row=4, column=0, columnspan=2, pady=10)
 
             # Cerrar la ventana principal
@@ -489,18 +424,24 @@ def crear_archivos():
             ventana_parametros = tk.Toplevel()
             ventana_parametros.title("Condiciones para los sensores")
 
-            # Parámetros de LUZ
-            label_condiciones_luz = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
-            label_condiciones_luz.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+           # Parámetros de LUZ
+            label_condiciones_temperatura = tk.Label(ventana_parametros, text="Condiciones para la Luz:")
+            label_condiciones_temperatura.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            label_hora_luz = tk.Label(ventana_parametros, text="Hora:")
-            label_hora_luz.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_hora_luz = ttk.Combobox(ventana_parametros, values=["Mañana", "Tarde"])
-            combo_hora_luz.set("Mañana")
-            combo_hora_luz.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+            label_zona_temp = tk.Label(ventana_parametros, text="Zona:")
+            label_zona_temp.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            combo_zona_temp = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+            combo_zona_temp.set("Zona Norte")
+            combo_zona_temp.grid(row=1, column=1, padx=5, pady=5, sticky="we")
+
+            label_estacion_temp = tk.Label(ventana_parametros, text="Estación:")
+            label_estacion_temp.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            combo_estacion_temp = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
+            combo_estacion_temp.set("Invierno")
+            combo_estacion_temp.grid(row=2, column=1, padx=5, pady=5, sticky="we")
 
             # Botón para generar archivos
-            button_generar_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_hora_luz.get()))
+            button_generar_luz = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona_temp_luz.get(), combo_estacion_temp_luz.get()))
             button_generar_luz.grid(row=4, column=0, columnspan=2, pady=10)
 
             # Cerrar la ventana principal
@@ -510,7 +451,7 @@ def crear_archivos():
             messagebox.showwarning("Advertencia", "El archivo IFC no contiene parámetros de temperatura.")
 
 # Función para generar archivos con valores de temperatura, humedad y luz diferentes
-def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
+def generar_archivos(ruta_archivo, zona, estacion, personas=""):
     cantidad_documentos = int(entry_cantidad.get())
     archivo_texto = ""
 
@@ -524,9 +465,8 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
 
     documentos_creados = []
 
-    # Obtener rango de humedad base
-    rango_humedad_base = obtener_rango_humedad_base()
-    humedad_base = random.randint(rango_humedad_base[0], rango_humedad_base[1])
+   # Generar temperatura de rocío aleatoria en un rango entre 10°C y 20°C
+    temperatura_rocio_celsius = random.uniform(10, 20)
 
     # Inicializar nuevo_valor_luz como None
     nuevo_valor_luz = None
@@ -540,15 +480,14 @@ def generar_archivos(ruta_archivo, zona, estacion, personas="", hora=""):
 
         if "IFCPOSITIVERATIOMEASURE" in archivo_texto:
             # Calcular la humedad relativa
-            humedad_relativa = calcular_humedad_relativa(humedad_base, int(personas))
-        else:
-            humedad_relativa = humedad_base
+            humedad_relativa  = calcular_humedad_relativa(nuevo_valor_temperatura, temperatura_rocio_celsius, int(personas))
 
-        nuevo_valor_humedad = round(humedad_relativa)
-
+            nuevo_valor_humedad = round(humedad_relativa)
+            
         if "IFCILLUMINANCEMEASURE" in archivo_texto:
             # Calcular la cantidad de luz solar
-            nuevo_valor_luz = round(calcular_luz_solar(zona, estacion, hora))
+            rango_luz = calcular_luz_solar(zona, estacion)
+            nuevo_valor_luz = round(random.uniform(rango_luz[0], rango_luz[1]))
 
         # Crear una copia del archivo IFC
         nombre_archivo_original = os.path.basename(ruta_archivo)
