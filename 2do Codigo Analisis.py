@@ -3,6 +3,7 @@ import os
 import random
 import re
 import shutil
+import time
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QComboBox, QLineEdit, QFileDialog, QMessageBox
 
 class GestionArchivoIFC:
@@ -169,6 +170,9 @@ class VentanaPrincipal(QWidget):
                 QMessageBox.warning(self, 'Error', 'No se encontraron rangos de temperatura para la zona y estación seleccionadas.')
                 return
 
+             # Tiempo inicial
+            start_time = time.time()
+
             # Leer el archivo original una sola vez
             with open(ruta_archivo_original, 'r') as file:
                 lineas_originales = file.readlines()
@@ -189,7 +193,8 @@ class VentanaPrincipal(QWidget):
                 ruta_destino = os.path.join(ruta_carpeta, nombre_archivo)
                 with open(ruta_destino, 'w') as file:
                     file.writelines(lineas_modificadas)
-
+            elapsed_time = time.time() - start_time
+            print(f'Tiempo: {elapsed_time}')
             QMessageBox.information(self, 'Archivos generados', f'Se han generado {num_archivos} archivos en la carpeta "Simulaciones IFC".')
 
 if __name__ == '__main__':

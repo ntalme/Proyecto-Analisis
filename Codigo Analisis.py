@@ -10,6 +10,7 @@ import random
 import shutil
 #LIBRERIA PARA CREAR PESTAÑAS INTERACTIVAS
 import tkinter as tk
+import time
 #IMPORTACIONES DE TKINTER
 from tkinter import filedialog, messagebox, ttk
 
@@ -474,6 +475,9 @@ def generar_archivos(ruta_archivo, zona, estacion, personas=""):
     # Inicializar nuevo_valor_luz como None
     nuevo_valor_luz = None
 
+    # Tiempo inicial
+    start_time = time.time()
+    
    # Generar los documentos con valores de temperatura, humedad y luz diferentes
     for i in range(1, cantidad_documentos + 1):
         if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in archivo_texto:
@@ -539,6 +543,10 @@ def generar_archivos(ruta_archivo, zona, estacion, personas=""):
             cambiar_valor_luz(ruta_archivo_copia, nuevo_valor_luz)
 
         documentos_creados.append(nombre_archivo_copia)
+
+    #Tiempo
+    elapsed_time = time.time() - start_time
+    print(f'Tiempo: {elapsed_time}')
 
     # Mensaje de confirmación
     mensaje_confirmacion = f"Se crearon {cantidad_documentos} documentos con los siguientes nombres:\n\n"
