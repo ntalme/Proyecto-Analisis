@@ -1,10 +1,15 @@
-import ifcopenshell
+#LIBRERIA PARA RUTAS DE ARCHIVOS
 import os
-import random
+#LIBRERIA IFC
+import ifcopenshell
+#LIBRERIA PARA EXPRESIONES REGULARES
 import re
+#LIBRERIA PARA GENERAR NUMEROS ALEATORIOS
+import random
+#LIBRERIA PARA COPIAR ARCHIVOS
 import shutil
+#LIBRERIA PARA CREAR PESTAÑAS INTERACTIVAS
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QComboBox, QLineEdit, QFileDialog, QMessageBox
-
 class GestionArchivoIFC:
     def __init__(self, ruta_archivo):
         self.ruta_archivo = ruta_archivo
@@ -12,6 +17,7 @@ class GestionArchivoIFC:
         self.lineas_sensores = self.encontrar_lineas_sensores()
         self.mostrar_lineas_sensores()
 
+    # Función para abrir un archivo IFC
     def abrir_archivo_ifc(self):
         try:
             archivo_ifc = ifcopenshell.open(self.ruta_archivo)
@@ -21,14 +27,17 @@ class GestionArchivoIFC:
             print("Error al abrir el archivo IFC:", e)
             return None
 
+    # Función para leer el archivo y retornar sus líneas
     def leer_archivo(self):
         with open(self.ruta_archivo, 'r') as file:
             return file.readlines()
 
+    # Función para escribir líneas en un archivo
     def escribir_archivo(self, lineas, nueva_ruta):
         with open(nueva_ruta, 'w') as file:
             file.writelines(lineas)
 
+    # Función para encontrar y guardar las líneas donde se encuentran los sensores de luz, humedad y temperatura
     def encontrar_lineas_sensores(self):
         lineas = self.leer_archivo()
         lineas_sensores = {"IFCTHERMODYNAMICTEMPERATUREMEASURE": None, "IFCILLUMINANCEMEASURE": None, "IFCPOSITIVERATIOMEASURE": None}
@@ -46,11 +55,13 @@ class GestionArchivoIFC:
         
         return lineas_sensores
 
+    # Función para mostrar por pantalla las líneas donde se encuentran los sensores
     def mostrar_lineas_sensores(self):
         print("Líneas de los sensores:")
         for sensor, linea in self.lineas_sensores.items():
-            print(f"{sensor}: Línea {linea + 1}")
+            print(f"{sensor}: Línea {linea}")
 
+    # Función para modificar el valor de los sensores en el archivo IFC
     def modificar_parametro(self, parametro, nuevo_valor):
         sensor_linea = self.lineas_sensores[parametro]
         if sensor_linea is not None:
@@ -61,6 +72,7 @@ class GestionArchivoIFC:
         else:
             print(f"El parámetro {parametro} no está presente en el archivo IFC. No se realizaron cambios.")
 
+    # Función para obtener el rango de temperatura según la zona y estación
     def obtener_rango_temperatura(self, zona, estacion):
         rangos = {
             "Zona Norte": {"Invierno": (2, 22), "Otoño": (3, 24), "Primavera": (4, 24), "Verano": (7, 24)},
@@ -70,6 +82,7 @@ class GestionArchivoIFC:
         }
         return rangos.get(zona, {}).get(estacion, None)
 
+    # Función para calcular el rango de luz solar según la zona y estación
     def calcular_luz_solar(self, zona, estacion):
         luz_solar_rangos = {
             "Zona Norte": {"Invierno": (4500, 6500), "Otoño": (4500, 6500), "Primavera": (5500, 7000), "Verano": (5500, 6500)},
@@ -79,9 +92,11 @@ class GestionArchivoIFC:
         }
         return luz_solar_rangos.get(zona, {}).get(estacion, (0, 0))
 
+    # Función para calcular la presión de vapor saturado a una temperatura dada
     def calcular_presion_vapor_saturado(self, temperatura):
         return 6.11 * 10**(7.5 * temperatura / (237.3 + temperatura))
 
+    # Función para calcular la humedad relativa según la temperatura, temperatura de rocío y número de personas
     def calcular_humedad_relativa(self, temperatura, temperatura_rocio, numero_personas):
         es = self.calcular_presion_vapor_saturado(temperatura)
         e = self.calcular_presion_vapor_saturado(temperatura_rocio) + 0.3 * numero_personas
@@ -96,6 +111,7 @@ class VentanaPrincipal(QWidget):
         self.setWindowTitle('Generador de Simulaciones IFC')
         self.setGeometry(200, 200, 500, 300)
 
+        # Creación de widgets para la interfaz gráfica
         self.label_ruta = QLabel('Ruta del archivo IFC:')
         self.entry_ruta = QLineEdit()
         self.button_seleccionar = QPushButton('Seleccionar')
@@ -111,6 +127,7 @@ class VentanaPrincipal(QWidget):
         self.entry_num_archivos = QLineEdit()
         self.button_generar = QPushButton('Generar archivos')
 
+        # Configuración del layout de la ventana principal
         layout = QVBoxLayout()
         layout.addWidget(self.label_ruta)
         layout.addWidget(self.entry_ruta)
@@ -127,53 +144,48 @@ class VentanaPrincipal(QWidget):
         layout.addStretch(1)
         self.setLayout(layout)
 
+        # Conexión de los botones a sus respectivas funciones
         self.button_seleccionar.clicked.connect(self.seleccionar_archivo)
         self.button_generar.clicked.connect(self.generar_archivos)
 
+    # Función para seleccionar un archivo IFC mediante un cuadro de diálogo
     def seleccionar_archivo(self):
         ruta_archivo, _ = QFileDialog.getOpenFileName(self, 'Seleccionar archivo IFC', '', 'Archivos IFC (*.ifc)')
         if ruta_archivo:
             self.entry_ruta.setText(ruta_archivo)
 
+    # Función para generar archivos IFC con valores aleatorios de sensores
     def generar_archivos(self):
-        ruta_carpeta = os.path.join(os.path.expanduser("~"), "Desktop", "Simulaciones IFC")
-        if not os.path.exists(ruta_carpeta):
-            os.makedirs(ruta_carpeta)
-
-        ruta_archivo_original = self.entry_ruta.text()
+        ruta_archivo = self.entry_ruta.text()
         zona = self.combo_zona.currentText()
         estacion = self.combo_estacion.currentText()
         numero_personas = int(self.entry_personas.text())
         num_archivos = int(self.entry_num_archivos.text())
 
-        gestion_archivo = GestionArchivoIFC(ruta_archivo_original)
+        gestion_archivo_ifc = GestionArchivoIFC(ruta_archivo)
 
-        if gestion_archivo.archivo_ifc:
-            rango_temperatura = gestion_archivo.obtener_rango_temperatura(zona, estacion)
-            luz_solar = gestion_archivo.calcular_luz_solar(zona, estacion)
+        for i in range(num_archivos):
+            temperatura = random.uniform(*gestion_archivo_ifc.obtener_rango_temperatura(zona, estacion))
+            temperatura_rocio = random.uniform(0, temperatura)
+            luz_min, luz_max = gestion_archivo_ifc.calcular_luz_solar(zona, estacion)
+            luz_solar = random.uniform(luz_min, luz_max)
+            humedad = gestion_archivo_ifc.calcular_humedad_relativa(temperatura, temperatura_rocio, numero_personas)
 
-            if not rango_temperatura:
-                QMessageBox.warning(self, 'Error', 'No se encontraron rangos de temperatura para la zona y estación seleccionadas.')
-                return
+            gestion_archivo_ifc.modificar_parametro("IFCTHERMODYNAMICTEMPERATUREMEASURE", temperatura)
+            gestion_archivo_ifc.modificar_parametro("IFCILLUMINANCEMEASURE", luz_solar)
+            gestion_archivo_ifc.modificar_parametro("IFCPOSITIVERATIOMEASURE", humedad)
 
-            for i in range(num_archivos):
-                temperatura_rocio = random.uniform(rango_temperatura[0], rango_temperatura[1])
-                humedad_relativa = gestion_archivo.calcular_humedad_relativa(random.uniform(rango_temperatura[0], rango_temperatura[1]), temperatura_rocio, numero_personas)
-                temperatura = random.uniform(rango_temperatura[0], rango_temperatura[1])
-                luz = random.uniform(luz_solar[0], luz_solar[1])
+            nueva_ruta = os.path.join(os.path.expanduser("~"), "Desktop", "Simulaciones IFC", f"archivo{i+1}.ifc")
+            shutil.copyfile(ruta_archivo, nueva_ruta)
 
-                gestion_archivo.modificar_parametro("IFCTHERMODYNAMICTEMPERATUREMEASURE", temperatura)
-                gestion_archivo.modificar_parametro("IFCILLUMINANCEMEASURE", luz)
-                gestion_archivo.modificar_parametro("IFCPOSITIVERATIOMEASURE", humedad_relativa)
+            print(f"Archivo {i+1} generado con éxito en {nueva_ruta}")
 
-                nombre_archivo = f"Simulacion_T{temperatura:.2f}_L{luz:.2f}_H{humedad_relativa:.2f}.ifc"
-                nueva_ruta = os.path.join(ruta_carpeta, nombre_archivo)
-                shutil.copyfile(ruta_archivo_original, nueva_ruta)
+        QMessageBox.information(self, "Generación completada", f"Se han generado {num_archivos} archivos IFC en la carpeta 'Simulaciones IFC' en el escritorio.", QMessageBox.Ok)
 
-            QMessageBox.information(self, 'Archivos generados', f'Se han generado {num_archivos} archivos en la carpeta "Simulaciones IFC" en el escritorio.')
 
 if __name__ == '__main__':
-    app = QApplication([])
+    import sys
+    app = QApplication(sys.argv)
     ventana = VentanaPrincipal()
     ventana.show()
-    app.exec_()
+    sys.exit(app.exec_())
