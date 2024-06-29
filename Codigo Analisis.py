@@ -10,6 +10,7 @@ import random
 import shutil
 #LIBRERIA PARA CREAR PESTAÑAS INTERACTIVAS
 import tkinter as tk
+#IMPORTACIONES DE TKINTER
 from tkinter import filedialog, messagebox, ttk
 
 # Función para abrir el archivo
