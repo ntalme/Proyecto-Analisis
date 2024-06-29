@@ -8,6 +8,8 @@ import re
 import random
 #LIBRERIA PARA COPIAR ARCHIVOS
 import shutil
+#LIBRERIA PARA EL TIEMPO
+import time
 #LIBRERIA PARA CREAR PESTAÑAS INTERACTIVAS
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
@@ -219,6 +221,7 @@ def crear_archivos():
     archivo_ifc = abrir_archivo_ifc(ruta_archivo_ifc)
 
     if archivo_ifc:
+
         # Leer el archivo IFC una vez
         with open(ruta_archivo_ifc, 'r') as file:
             archivo_texto = file.read()
@@ -452,6 +455,9 @@ def crear_archivos():
 
 # Función para generar archivos con valores de temperatura, humedad y luz diferentes
 def generar_archivos(ruta_archivo, zona, estacion, personas=""):
+    # Medir el tiempo inicial
+    tiempo_inicial = time.time()
+
     cantidad_documentos = int(entry_cantidad.get())
     archivo_texto = ""
 
@@ -543,6 +549,10 @@ def generar_archivos(ruta_archivo, zona, estacion, personas=""):
         mensaje_confirmacion += f"{documento}\n"
     mensaje_confirmacion += f"\nLos documentos se guardaron en: {carpeta_destino}"
     messagebox.showinfo("Documentos creados", mensaje_confirmacion)
+
+    tiempo_final = time.time()
+    tiempo_transcurrido = tiempo_final - tiempo_inicial
+    print(f"Tiempo transcurrido: {tiempo_transcurrido:.2f} segundos")
 
 # Crear la ventana principal
 root = tk.Tk()

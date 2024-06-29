@@ -1,247 +1,179 @@
-import os
 import ifcopenshell
-import re
+import os
 import random
+import re
 import shutil
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QComboBox, QLineEdit, QFileDialog, QMessageBox
 
-def abrir_archivo_ifc(ruta_archivo):
-    try:
-        archivo_ifc = ifcopenshell.open(ruta_archivo)
-        print("Archivo IFC abierto correctamente.")
-        return archivo_ifc
-    except Exception as e:
-        print("Error al abrir el archivo IFC:", e)
-        return None
+class GestionArchivoIFC:
+    def __init__(self, ruta_archivo):
+        self.ruta_archivo = ruta_archivo
+        self.archivo_ifc = self.abrir_archivo_ifc()
+        self.lineas_sensores = self.encontrar_lineas_sensores()
+        self.mostrar_lineas_sensores()
 
-def obtener_rango_temperatura(zona, estacion):
-    if zona == "Zona Norte":
-        if estacion == "Invierno":
-            return (2, 22)
-        elif estacion == "Otoño":
-            return (3, 24)
-        elif estacion == "Primavera":
-            return (4, 24)
-        elif estacion == "Verano":
-            return (7, 24)
-    elif zona == "Zona Central":
-        if estacion == "Invierno":
-            return (3, 18)
-        elif estacion == "Otoño":
-            return (5, 27)
-        elif estacion == "Primavera":
-            return (5, 28)
-        elif estacion == "Verano":
-            return (12, 31)
-    elif zona == "Zona Sur":
-        if estacion == "Invierno":
-            return (6, 14)
-        elif estacion == "Otoño":
-            return (7, 22)
-        elif estacion == "Primavera":
-            return (6, 20)
-        elif estacion == "Verano":
-            return (11, 23)
-    elif zona == "Zona Austral":
-        if estacion == "Invierno":
-            return (3, 11)
-        elif estacion == "Otoño":
-            return (3, 18)
-        elif estacion == "Primavera":
-            return (4, 16)
-        elif estacion == "Verano":
-            return (10, 18)
-    return None
+    def abrir_archivo_ifc(self):
+        try:
+            archivo_ifc = ifcopenshell.open(self.ruta_archivo)
+            print("Archivo IFC abierto correctamente.")
+            return archivo_ifc
+        except Exception as e:
+            print("Error al abrir el archivo IFC:", e)
+            return None
 
-def calcular_luz_solar(zona, estacion):
-    luz_solar = 0
-    if zona == "Zona Norte":
-        if estacion == "Invierno":
-            luz_solar = (4500, 6500)
-        elif estacion == "Otoño":
-            luz_solar = (4500, 6500)
-        elif estacion == "Primavera":
-            luz_solar = (5500, 7000)
-        elif estacion == "Verano":
-            luz_solar = (5500, 6500)
-    elif zona == "Zona Central":
-        if estacion == "Invierno":
-            luz_solar = (2000, 4000)
-        elif estacion == "Otoño":
-            luz_solar = (2000, 5500)
-        elif estacion == "Primavera":
-            luz_solar = (4000, 7000)
-        elif estacion == "Verano":
-            luz_solar = (5500, 7000)
-    elif zona == "Zona Sur":
-        if estacion == "Invierno":
-            luz_solar = (3000, 4000)
-        elif estacion == "Otoño":
-            luz_solar = (3000, 5000)
-        elif estacion == "Primavera":
-            luz_solar = (4000, 6500)
-        elif estacion == "Verano":
-            luz_solar = (5000, 6500)
-    elif zona == "Zona Austral":
-        if estacion == "Invierno":
-            luz_solar = (1000, 2500)
-        elif estacion == "Otoño":
-            luz_solar = (1000, 2000)
-        elif estacion == "Primavera":
-            luz_solar = (2500, 3500)
-        elif estacion == "Verano":
-            luz_solar = (2000, 3500)
-    return luz_solar
+    def leer_archivo(self):
+        with open(self.ruta_archivo, 'r') as file:
+            return file.readlines()
 
-def calcular_presion_vapor_saturado(temperatura):
-    return 6.11 * 10**(7.5 * temperatura / (237.3 + temperatura))
+    def escribir_archivo(self, lineas, nueva_ruta):
+        with open(nueva_ruta, 'w') as file:
+            file.writelines(lineas)
 
-def calcular_humedad_relativa(temperatura, temperatura_rocio, numero_personas):
-    es = calcular_presion_vapor_saturado(temperatura)
-    e = calcular_presion_vapor_saturado(temperatura_rocio)
-    e += 0.3 * numero_personas
-    return (e / es) * 100
+    def encontrar_lineas_sensores(self):
+        lineas = self.leer_archivo()
+        lineas_sensores = {"IFCTHERMODYNAMICTEMPERATUREMEASURE": None, "IFCILLUMINANCEMEASURE": None, "IFCPOSITIVERATIOMEASURE": None}
+        
+        patrones = {
+            "IFCTHERMODYNAMICTEMPERATUREMEASURE": re.compile(r'\bIFCTHERMODYNAMICTEMPERATUREMEASURE\b\((\d+(\.\d*)?)\)'),
+            "IFCILLUMINANCEMEASURE": re.compile(r'\bIFCILLUMINANCEMEASURE\b\((\d+(\.\d*)?)\)'),
+            "IFCPOSITIVERATIOMEASURE": re.compile(r'\bIFCPOSITIVERATIOMEASURE\b\((\d+(\.\d*)?)\)')
+        }
 
-def obtener_posiciones_relevantes(ruta_archivo):
-    posiciones = {"temperatura": [], "humedad": [], "luz": []}
-    with open(ruta_archivo, 'r') as file:
-        lineas = file.readlines()
         for i, linea in enumerate(lineas):
-            if "IFCTHERMODYNAMICTEMPERATUREMEASURE" in linea:
-                posiciones["temperatura"].append(i)
-            elif "IFCPOSITIVERATIOMEASURE" in linea:
-                posiciones["humedad"].append(i)
-            elif "IFCILLUMINANCEMEASURE" in linea:
-                posiciones["luz"].append(i)
-    return posiciones, lineas
-
-def modificar_valores(lineas, posiciones, tipo, nuevo_valor):
-    valor_formateado = f'{nuevo_valor:.1f}'
-    if tipo == "temperatura":
-        for pos in posiciones["temperatura"]:
-            lineas[pos] = re.sub(r'IFCTHERMODYNAMICTEMPERATUREMEASURE\(\d+\.\d+\)', f'IFCTHERMODYNAMICTEMPERATUREMEASURE({valor_formateado})', lineas[pos])
-    elif tipo == "humedad":
-        for pos in posiciones["humedad"]:
-            lineas[pos] = re.sub(r'IFCPOSITIVERATIOMEASURE\(\d+\.\d+\)', f'IFCPOSITIVERATIOMEASURE({valor_formateado})', lineas[pos])
-    elif tipo == "luz":
-        for pos in posiciones["luz"]:
-            lineas[pos] = re.sub(r'IFCILLUMINANCEMEASURE\(\d+\.\d+\)', f'IFCILLUMINANCEMEASURE({valor_formateado})', lineas[pos])
-
-def generar_archivos(ruta_archivo_ifc, zona, estacion, num_archivos, numero_personas):
-    try:
-        posiciones, lineas = obtener_posiciones_relevantes(ruta_archivo_ifc)
+            for sensor, patron in patrones.items():
+                if patron.search(linea):
+                    lineas_sensores[sensor] = i
         
-        # Obtener la ruta del escritorio
-        escritorio = os.path.join(os.path.expanduser('~'), 'Desktop')
-        
-        # Crear la carpeta de simulaciones IFC si no existe
-        carpeta_simulaciones = os.path.join(escritorio, 'Simulaciones IFC')
-        if not os.path.exists(carpeta_simulaciones):
-            os.makedirs(carpeta_simulaciones)
-        
-        for idx in range(num_archivos):
-            lineas_copia = lineas.copy()
-            if posiciones["temperatura"]:
-                nuevo_valor_temperatura = random.uniform(*obtener_rango_temperatura(zona, estacion))
-                modificar_valores(lineas_copia, posiciones, "temperatura", nuevo_valor_temperatura)
-            if posiciones["humedad"]:
-                nuevo_valor_humedad = random.uniform(30, 70)  # Ejemplo de rango para humedad
-                temperatura_actual = float(re.search(r'IFCTHERMODYNAMICTEMPERATUREMEASURE\((\d+\.\d+)\)', lineas[posiciones["temperatura"][0]]).group(1))
-                temperatura_rocio = calcular_temperatura_rocio(temperatura_actual, nuevo_valor_humedad)
-                nuevo_valor_humedad = calcular_humedad_relativa(temperatura_actual, temperatura_rocio, numero_personas)
-                modificar_valores(lineas_copia, posiciones, "humedad", nuevo_valor_humedad)
-            if posiciones["luz"]:
-                nuevo_valor_luz = random.uniform(*calcular_luz_solar(zona, estacion))
-                modificar_valores(lineas_copia, posiciones, "luz", nuevo_valor_luz)
+        return lineas_sensores
 
-            # Determinar el nombre del archivo según los sensores presentes
-            nombre_base = os.path.splitext(os.path.basename(ruta_archivo_ifc))[0]
-            nombre_archivo = nombre_base
+    def mostrar_lineas_sensores(self):
+        print("Líneas de los sensores:")
+        for sensor, linea in self.lineas_sensores.items():
+            print(f"{sensor}: Línea {linea + 1}")
 
-            if posiciones["temperatura"]:
-                nombre_archivo += f"_T{nuevo_valor_temperatura:.1f}"
-            if posiciones["humedad"]:
-                nombre_archivo += f"_H{nuevo_valor_humedad:.1f}"
-            if posiciones["luz"]:
-                nombre_archivo += f"_L{nuevo_valor_luz:.1f}"
-            
-            nombre_archivo += ".ifc"
-
-            # Guardar el archivo en la carpeta de simulaciones IFC
-            ruta_archivo_guardado = os.path.join(carpeta_simulaciones, nombre_archivo)
-            
-            with open(ruta_archivo_guardado, 'w') as file:
-                file.writelines(lineas_copia)
-        
-        messagebox.showinfo("Archivos generados", f"Se generaron {num_archivos} archivos adicionales con valores editados en '{carpeta_simulaciones}'.")
-    except Exception as e:
-        messagebox.showerror("Error", f"Ocurrió un error al generar los archivos: {e}")
-
-
-
-def crear_archivos():
-    ruta_archivo_ifc = entry_ruta.get()
-    archivo_ifc = abrir_archivo_ifc(ruta_archivo_ifc)
-
-    if archivo_ifc:
-        posiciones, lineas = obtener_posiciones_relevantes(ruta_archivo_ifc)
-        
-        if posiciones["temperatura"] or posiciones["humedad"] or posiciones["luz"]:
-            ventana_parametros = tk.Toplevel()
-            ventana_parametros.title("Condiciones para los sensores")
-
-            label_zona = tk.Label(ventana_parametros, text="Zona:")
-            label_zona.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-            combo_zona = ttk.Combobox(ventana_parametros, values=["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
-            combo_zona.set("Zona Norte")
-            combo_zona.grid(row=0, column=1, padx=5, pady=5, sticky="we")
-
-            label_estacion = tk.Label(ventana_parametros, text="Estación:")
-            label_estacion.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-            combo_estacion = ttk.Combobox(ventana_parametros, values=["Invierno", "Otoño", "Primavera", "Verano"])
-            combo_estacion.set("Invierno")
-            combo_estacion.grid(row=1, column=1, padx=5, pady=5, sticky="we")
-
-            label_num_archivos = tk.Label(ventana_parametros, text="Número de archivos a generar:")
-            label_num_archivos.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-            entry_num_archivos = tk.Entry(ventana_parametros)
-            entry_num_archivos.grid(row=2, column=1, padx=5, pady=5, sticky="we")
-
-            button_generar = tk.Button(ventana_parametros, text="Generar archivos", command=lambda: generar_archivos(ruta_archivo_ifc, combo_zona.get(), combo_estacion.get(), int(entry_num_archivos.get())))
-            button_generar.grid(row=3, column=0, columnspan=2, pady=10)
-
-            ventana_parametros.transient()
-            ventana_parametros.grab_set()
-            ventana_parametros.wait_window()
+    def modificar_parametro(self, parametro, nuevo_valor):
+        sensor_linea = self.lineas_sensores[parametro]
+        if sensor_linea is not None:
+            lineas = self.leer_archivo()
+            patron = re.compile(rf'\b{parametro}\b\((\d+(\.\d*)?)\)')
+            lineas[sensor_linea] = re.sub(patron, f'{parametro}({nuevo_valor})', lineas[sensor_linea])
+            self.escribir_archivo(lineas, self.ruta_archivo)
         else:
-            messagebox.showerror("Error", "No se encontraron sensores en el archivo IFC.")
-    else:
-        messagebox.showerror("Error", "No se pudo abrir el archivo IFC.")
+            print(f"El parámetro {parametro} no está presente en el archivo IFC. No se realizaron cambios.")
 
-def crear_interfaz():
-    try:
-        global entry_ruta
-        root = tk.Tk()
-        root.title("Generador de archivos IFC")
+    def obtener_rango_temperatura(self, zona, estacion):
+        rangos = {
+            "Zona Norte": {"Invierno": (2, 22), "Otoño": (3, 24), "Primavera": (4, 24), "Verano": (7, 24)},
+            "Zona Central": {"Invierno": (3, 18), "Otoño": (5, 27), "Primavera": (5, 28), "Verano": (12, 31)},
+            "Zona Sur": {"Invierno": (6, 14), "Otoño": (7, 22), "Primavera": (6, 20), "Verano": (11, 23)},
+            "Zona Austral": {"Invierno": (3, 11), "Otoño": (3, 18), "Primavera": (4, 16), "Verano": (10, 18)}
+        }
+        return rangos.get(zona, {}).get(estacion, None)
 
-        label_ruta = tk.Label(root, text="Ruta del archivo IFC:")
-        label_ruta.grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        entry_ruta = tk.Entry(root, width=50)
-        entry_ruta.grid(row=0, column=1, padx=5, pady=5, sticky="we")
+    def calcular_luz_solar(self, zona, estacion):
+        luz_solar_rangos = {
+            "Zona Norte": {"Invierno": (4500, 6500), "Otoño": (4500, 6500), "Primavera": (5500, 7000), "Verano": (5500, 6500)},
+            "Zona Central": {"Invierno": (2000, 4000), "Otoño": (2000, 5500), "Primavera": (4000, 7000), "Verano": (5500, 7000)},
+            "Zona Sur": {"Invierno": (3000, 4000), "Otoño": (3000, 5000), "Primavera": (4000, 6500), "Verano": (5000, 6500)},
+            "Zona Austral": {"Invierno": (1000, 2500), "Otoño": (1000, 2000), "Primavera": (2500, 3500), "Verano": (2000, 3500)}
+        }
+        return luz_solar_rangos.get(zona, {}).get(estacion, (0, 0))
 
-        button_seleccionar = tk.Button(root, text="Seleccionar archivo", command=lambda: entry_ruta.insert(tk.END, filedialog.askopenfilename()))
-        button_seleccionar.grid(row=0, column=2, padx=5, pady=5)
+    def calcular_presion_vapor_saturado(self, temperatura):
+        return 6.11 * 10**(7.5 * temperatura / (237.3 + temperatura))
 
-        button_crear_archivos = tk.Button(root, text="Crear Archivos", command=crear_archivos)
-        button_crear_archivos.grid(row=1, column=0, columnspan=3, pady=10)
+    def calcular_humedad_relativa(self, temperatura, temperatura_rocio, numero_personas):
+        es = self.calcular_presion_vapor_saturado(temperatura)
+        e = self.calcular_presion_vapor_saturado(temperatura_rocio) + 0.3 * numero_personas
+        return (e / es) * 100
 
-        button_salir = tk.Button(root, text="Salir", command=root.quit)
-        button_salir.grid(row=2, column=0, columnspan=3, pady=10)
+class VentanaPrincipal(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-        root.mainloop()
-    except Exception as e:
-        print("Error al crear la interfaz:", e)
+    def initUI(self):
+        self.setWindowTitle('Generador de Simulaciones IFC')
+        self.setGeometry(200, 200, 500, 300)
 
-if __name__ == "__main__":
-    crear_interfaz()
+        self.label_ruta = QLabel('Ruta del archivo IFC:')
+        self.entry_ruta = QLineEdit()
+        self.button_seleccionar = QPushButton('Seleccionar')
+        self.label_zona = QLabel('Zona:')
+        self.combo_zona = QComboBox()
+        self.combo_zona.addItems(["Zona Norte", "Zona Central", "Zona Sur", "Zona Austral"])
+        self.label_estacion = QLabel('Estación:')
+        self.combo_estacion = QComboBox()
+        self.combo_estacion.addItems(["Invierno", "Otoño", "Primavera", "Verano"])
+        self.label_personas = QLabel('Número de personas:')
+        self.entry_personas = QLineEdit()
+        self.label_num_archivos = QLabel('Número de archivos a generar:')
+        self.entry_num_archivos = QLineEdit()
+        self.button_generar = QPushButton('Generar archivos')
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.label_ruta)
+        layout.addWidget(self.entry_ruta)
+        layout.addWidget(self.button_seleccionar)
+        layout.addWidget(self.label_zona)
+        layout.addWidget(self.combo_zona)
+        layout.addWidget(self.label_estacion)
+        layout.addWidget(self.combo_estacion)
+        layout.addWidget(self.label_personas)
+        layout.addWidget(self.entry_personas)
+        layout.addWidget(self.label_num_archivos)
+        layout.addWidget(self.entry_num_archivos)
+        layout.addWidget(self.button_generar)
+        layout.addStretch(1)
+        self.setLayout(layout)
+
+        self.button_seleccionar.clicked.connect(self.seleccionar_archivo)
+        self.button_generar.clicked.connect(self.generar_archivos)
+
+    def seleccionar_archivo(self):
+        ruta_archivo, _ = QFileDialog.getOpenFileName(self, 'Seleccionar archivo IFC', '', 'Archivos IFC (*.ifc)')
+        if ruta_archivo:
+            self.entry_ruta.setText(ruta_archivo)
+
+    def generar_archivos(self):
+        ruta_carpeta = os.path.join(os.path.expanduser("~"), "Desktop", "Simulaciones IFC")
+        if not os.path.exists(ruta_carpeta):
+            os.makedirs(ruta_carpeta)
+
+        ruta_archivo_original = self.entry_ruta.text()
+        zona = self.combo_zona.currentText()
+        estacion = self.combo_estacion.currentText()
+        numero_personas = int(self.entry_personas.text())
+        num_archivos = int(self.entry_num_archivos.text())
+
+        gestion_archivo = GestionArchivoIFC(ruta_archivo_original)
+
+        if gestion_archivo.archivo_ifc:
+            rango_temperatura = gestion_archivo.obtener_rango_temperatura(zona, estacion)
+            luz_solar = gestion_archivo.calcular_luz_solar(zona, estacion)
+
+            if not rango_temperatura:
+                QMessageBox.warning(self, 'Error', 'No se encontraron rangos de temperatura para la zona y estación seleccionadas.')
+                return
+
+            for i in range(num_archivos):
+                temperatura_rocio = random.uniform(rango_temperatura[0], rango_temperatura[1])
+                humedad_relativa = gestion_archivo.calcular_humedad_relativa(random.uniform(rango_temperatura[0], rango_temperatura[1]), temperatura_rocio, numero_personas)
+                temperatura = random.uniform(rango_temperatura[0], rango_temperatura[1])
+                luz = random.uniform(luz_solar[0], luz_solar[1])
+
+                gestion_archivo.modificar_parametro("IFCTHERMODYNAMICTEMPERATUREMEASURE", temperatura)
+                gestion_archivo.modificar_parametro("IFCILLUMINANCEMEASURE", luz)
+                gestion_archivo.modificar_parametro("IFCPOSITIVERATIOMEASURE", humedad_relativa)
+
+                nombre_archivo = f"Simulacion_T{temperatura:.2f}_L{luz:.2f}_H{humedad_relativa:.2f}.ifc"
+                nueva_ruta = os.path.join(ruta_carpeta, nombre_archivo)
+                shutil.copyfile(ruta_archivo_original, nueva_ruta)
+
+            QMessageBox.information(self, 'Archivos generados', f'Se han generado {num_archivos} archivos en la carpeta "Simulaciones IFC" en el escritorio.')
+
+if __name__ == '__main__':
+    app = QApplication([])
+    ventana = VentanaPrincipal()
+    ventana.show()
+    app.exec_()
