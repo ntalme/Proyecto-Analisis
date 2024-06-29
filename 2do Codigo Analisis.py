@@ -56,14 +56,12 @@ class GestionArchivoIFC:
         for sensor, linea in self.lineas_sensores.items():
             print(f"{sensor}: Línea {linea + 1}")
 
-    # Función para modificar el valor de los sensores en el archivo IFC
-    def modificar_parametro(self, parametro, nuevo_valor):
+    # Función para modificar el valor de un sensor en una línea específica del archivo
+    def modificar_parametro_en_linea(self, lineas, parametro, nuevo_valor):
         sensor_linea = self.lineas_sensores[parametro]
         if sensor_linea is not None:
-            lineas = self.leer_archivo()
             patron = re.compile(rf'\b{parametro}\b\((\d+(\.\d*)?)\)')
             lineas[sensor_linea] = re.sub(patron, f'{parametro}({nuevo_valor})', lineas[sensor_linea])
-            self.escribir_archivo(lineas, self.ruta_archivo)
         else:
             print(f"El parámetro {parametro} no está presente en el archivo IFC. No se realizaron cambios.")
 
@@ -171,21 +169,33 @@ class VentanaPrincipal(QWidget):
                 QMessageBox.warning(self, 'Error', 'No se encontraron rangos de temperatura para la zona y estación seleccionadas.')
                 return
 
+            # Leer el archivo original una sola vez
+            with open(ruta_archivo_original, 'r') as file:
+                lineas_originales = file.readlines()
+
             for i in range(num_archivos):
                 temperatura = random.uniform(rango_temperatura[0], rango_temperatura[1])
                 humedad = gestion_archivo.calcular_humedad_relativa(random.uniform(rango_temperatura[0], rango_temperatura[1]), temperatura, numero_personas)
                 luz = random.uniform(luz_solar[0], luz_solar[1])
-                gestion_archivo.modificar_parametro("IFCTHERMODYNAMICTEMPERATUREMEASURE", temperatura)
-                gestion_archivo.modificar_parametro("IFCILLUMINANCEMEASURE", luz)
-                gestion_archivo.modificar_parametro("IFCPOSITIVERATIOMEASURE", humedad)
                 
+                # Modificar solo las líneas relevantes en el archivo original
+                lineas_modificadas = lineas_originales[:]
+                gestion_archivo.modificar_parametro_en_linea(lineas_modificadas, "IFCTHERMODYNAMICTEMPERATUREMEASURE", temperatura)
+                gestion_archivo.modificar_parametro_en_linea(lineas_modificadas, "IFCILLUMINANCEMEASURE", luz)
+                gestion_archivo.modificar_parametro_en_linea(lineas_modificadas, "IFCPOSITIVERATIOMEASURE", humedad)
+
+                # Escribir el archivo modificado
                 nombre_archivo = f"Simulacion_IFC_T{temperatura:.2f}_L{luz:.2f}_H{humedad:.2f}.ifc"
                 ruta_destino = os.path.join(ruta_carpeta, nombre_archivo)
-                shutil.copyfile(ruta_archivo_original, ruta_destino)
+                with open(ruta_destino, 'w') as file:
+                    file.writelines(lineas_modificadas)
 
             QMessageBox.information(self, 'Archivos generados', f'Se han generado {num_archivos} archivos en la carpeta "Simulaciones IFC".')
+
 if __name__ == '__main__':
-    app = QApplication([])
+    import sys
+    app = QApplication(sys.argv)
     ventana = VentanaPrincipal()
     ventana.show()
-    app.exec_()
+    sys.exit(app.exec_())
+
